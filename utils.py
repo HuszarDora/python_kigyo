@@ -68,9 +68,46 @@ def get_portfolio_return(d_weights):
     return pd.DataFrame(s_portfolio_return, columns=['pf'])
 
 
-def calc_historical_var(d_weights, l_conf_levels):
-    l_quantiles = [1-x for x in l_conf_levels]
+
+
+
+
+def osszead(a, b):
+    return a+b
+
+
+def get_portfolio_return_btw_dates(d_weights, from_date=None,to_date=None):
+    df = get_portfolio_return(d_weights)
+    fromdate = pd.to_datetime(from_date)
+    todate = pd.to_datetime(to_date)
+    filtered_df = df.loc[fromdate:todate]
+    return filtered_df
+
+
+d_weights = {'IEI': 0.6, 'VOO': 0.4}
+print(get_portfolio_return_btw_dates(d_weights, '2020-03-01', '2020-04-15'))
+
+
+def subtract_trading_date(actual_date, x):
+    date = pd.to_datetime(actual_date)
+    date_range = pd.bdate_range(end=date, periods=x+1)
+    result = date_range[0]
+    result_str = result.strftime('%Y-%m-%d')
+    return result_str
+
+
+
+print(subtract_trading_date('2023-03-28',2))
+
+
+
+
+def calc_historical_var(pf_value, d_weights, l_conf_levels, last_day_of_interval, window_in_days):
+    l_quantiles = [1 - x for x in l_conf_levels]
     df_pf = get_portfolio_return(d_weights)
     df_result = df_pf.quantile(l_quantiles)
     df_result.index = l_conf_levels
     return df_result
+
+
+
